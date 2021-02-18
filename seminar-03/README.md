@@ -47,5 +47,10 @@ std::string GetFirstLineOf(const char* filename) {
 **UML** (**U**nified **M**odelling **L**anguage, рус. "унифицированный язык моделирования") - стандарт при описании объектно-ориентированных систем.
 
 ![Пример](./images/sample.png)
+![База](./images/sample1.png)
+![Композиция](./images/sample2.png)
+![Агрегация](./images/sample3.png)
+![Интерфейсы](./images/sample4.png)
+![Наследование](./images/sample5.png)
 
 
