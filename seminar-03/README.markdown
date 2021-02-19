@@ -51,6 +51,85 @@ std::string GetFirstLineOf(const char* filename) {
 ![Композиция](./images/sample2.png)
 ![Агрегация](./images/sample3.png)
 ![Интерфейсы](./images/sample4.png)
-![Наследование](./images/sample5.png)
+![Наследование
+](./images/sample5.png)
 
+---
 
+# Singleton (Одиночка)
+  * Имя - Singleton
+  * Задача - создать класс с единственным экземпляр
+  * Решение - ???
+  * Результат - у класса есть только один экземпляр, предоставляем к нему глобальную точку доступа
+<details><summary>Решение</summary>
+<p>
+
+```c++
+// Singleton.h
+class Singleton {
+private:
+  static Singleton* p_instance;
+  // Конструкторы и оператор присваивания недоступны клиентам
+  Singleton () {}
+  Singleton (const Singleton&);
+  Singleton& operator= (Singleton&);
+public:
+  static Singleton* GetInstance() {
+    if (p_instance != nullptr) {
+      p_instance = new Singleton();
+    }
+    return p_instance;
+  }
+};
+
+// Singleton.cpp
+#include "Singleton.h"
+
+Singleton* Singleton::p_instance = nullptr;
+```
+
+Приведенная выше реализация подразумевает, что клиенты должны сами позаботиться об освобождении памяти при помощи оператора `delete`.
+Последняя особенность является серьезным недостатком классической реализации шаблона `Singleton`. Так как класс сам контролирует создание единственного объекта, было бы логичным возложить на него ответственность и за разрушение объекта. Этот недостаток отсутствует в реализации `Singleton`, впервые предложенной Скоттом Мэйерсом.
+
+```c++
+// Singleton.h
+class Singleton {
+private:
+  Singleton () {}
+  Singleton (const Singleton&);
+  Singleton& operator= (Singleton&);
+public:
+  static Singleton& GetInstance() {
+    static Singleton instance;
+    return instance;
+  }
+}; 
+```
+
+Тоже самое на `Python`:
+
+```python
+class Singleton(object):
+
+    def __new__(cls):
+        # Перекрываем создание объекта класса
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Singleton, cls).__new__(cls)
+        return cls.instance
+```
+
+</p>
+</details>
+
+# Prototype (Прототип)
+  * Имя - Prototype
+  * Задача - скопировать объект класса (в том числе в глубокой иерархии классов)
+  * Решение - ???
+  * Результат - копирующий код независим от классов копируемых объектов
+<details><summary>Решение</summary>
+<p>
+</p>
+</details>
+
+А давайте еще усложним ситуацию. Помимо проблемы копирования, скажем, что часть полей у копируемых объектов одинаковая.
+Причем 
