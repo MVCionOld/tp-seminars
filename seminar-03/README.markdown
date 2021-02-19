@@ -128,5 +128,6 @@ class Singleton(object):
   * Результат - копирующий код независим от классов копируемых объектов
 <details><summary>Решение</summary>
 <p>
+
 </p>
 </details>
