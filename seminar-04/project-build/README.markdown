@@ -142,7 +142,7 @@ install:
 uninstall:
 			rm -rf /usr/local/bin/hello
 ```
-Также в Makefile можно использовать переменные по bash'овому подходу:
+Также в Makefile можно использовать переменные по ```bash'овому``` подходу:
 ```bash
 <VAR_NAME> = <value string>
 ```
@@ -173,7 +173,174 @@ install:
 uninstall:
 			rm -rf $(PREFIX)/$(TARGET)
 ```
+***В конце добавлю, что make - это не кроссплатформенная утилита!***
+
 ### CMake
+CMake — это открытый и кросс-платформенный набор утилит, предназначенных для автоматизации тестирования, компиляции и создания пакетов проектов на C/C++.
 
+**Команды**  
+Команды в CMake подобны функциям во многих языках программирования. Чтобы вызвать команду, необходимо написать её имя, а затем передать ей обрамлённые в круглые скобки аргументы, отделённые символами пробелов. В приведённом примере команде message передаются шесть аргументов для вывода в консоль:
+```shell
+# Напечатает в консоль "CMake is the most powerful buildsystem!"
+message("CMake " "is " "the " "most " "powerful " "buildsystem!")
+```
 
+**Аргументы**  
+Аргументы, обрамлённые в двойные кавычки, позволяют внутри себя совершать экранирование и подстановку переменных. Необрамлённые аргументы не позволяют производить подобных вещей и не могут включать в себя символы ```()#"\``` и пробелы, однако более удобны для использования. Пример:
+```shell
+# Напечатает "Hello, my lovely CMake", один таб и "!":
+message("Hello, my lovely CMake\t!")
+
+# Напечатает "Hello,_my_lovely_CMake!" без пробелов:
+message(Hello,_my_lovely_CMake!)
+```
+
+**Комментарии**  
+Комментарии начинаются с символа решётки и заканчиваются в конце той строки, где они были напечатаны (см. примеры выше).
+
+**Переменные**  
+Переменные можно определить путём вызова команды ```set```, а удалить вызовом ```unset```. Получить значение переменной можно по конструкции ```${VARIABLE}```. Если переменная ещё не определена и где-то потребовалось получить её значение, то данная переменная обратится в пустую строку. Пример:
+```shell
+# Определить переменную VARIABLE со значением "Mr. Thomas":
+set(VARIABLE "Mr. Thomas")
+
+# Напечает "His name is: Mr. Thomas":
+message("His name is: " ${VARIABLE})
+
+# Напечатает "'BINGO' is equal to: []", так как "BINGO" не определена:
+message("'BINGO' is equal to: [${BINGO}]")
+
+# Удалить переменную VARIABLE:
+unset(VARIABLE)
+```
+
+**Опции**  
+CMake поддерживает задание опций, подлежащих модицификациям пользователей. Опции похожи на переменные и задаются командой ```option```, принимающей всего три аргумента: имя переменной, строковое описание переменной и значение переменной по умолчанию (```ON``` или ```OFF```):
+```shell
+# Задать опцию `USE_ANOTHER_LIBRARY` с описанием
+# "Do you want to use an another library?" и значением "OFF":
+option(USE_ANOTHER_LIBRARY "Do you want to use an another library?" OFF)
+```
+
+**Условные операторы**
+```shell
+# Напечатает "Of course, 5 > 1!":
+if(5 GREATER 1)
+    message("Of course, 5 > 1!")
+elseif(5 LESS 1)
+    message("Oh no, 5 < 1!")
+else()
+    message("Oh my god, 5 == 1!")
+endif() 
+```
+
+**Циклы**
+```shell
+# Напечатает в консоль три раза "VARIABLE is still 'Airport'":
+set(VARIABLE Airport)
+while(${VARIABLE} STREQUAL Airport)
+    message("VARIABLE is still '${VARIABLE}'")
+    message("VARIABLE is still '${VARIABLE}'")
+    message("VARIABLE is still '${VARIABLE}'")
+    set(VARIABLE "Police station")
+endwhile()
+```
+
+```shell
+# Напечатает "Give me the sugar please!" с новых строк:
+foreach(VARIABLE Give me the sugar please!)
+    message(${VARIABLE})
+endforeach()
+```
+
+```shell
+# Напечатает "0 1 2 3 4 5 6 7 8 9 10" с новых строк:
+foreach(VARIABLE RANGE 10)
+    message(${VARIABLE})
+endforeach()
+
+# Напечатает "3 4 5 6 7 8 9 10 11 12 13 14 15" с новых строк:
+foreach(VARIABLE RANGE 3 15)
+    message(${VARIABLE})
+endforeach()
+
+# Напечатает "50 60 70 80 90" с новых строк:
+foreach(VARIABLE RANGE 50 90 10)
+    message(${VARIABLE})
+endforeach()
+```
+
+***Еще есть функции и макросы, о них вы можете сами почитать в сети.***  
+
+Система сборки CMake принимает на вход файл ```CMakeLists.txt``` с описанием правил сборки на формальном языке CMake, а затем генерирует промежуточные и нативные файлы сборки в том же каталоге, принятых на Вашей платформе.  
+
+Сгенерированные файлы будут содержать конкретные названия системных утилит, директорий и компиляторов, в то время как команды CMake орудуют лишь абстрактным понятием компилятора и не привязаны к платформенно зависимым инструментам, сильно различающихся на разных операционных системах.
+
+**Проверка версии CMake**  
+```shell
+# Задать третью минимальную версию CMake:
+cmake_minimum_required(VERSION 3.0)
+```
+Некоторые разработчики намеренно выставляют низкую версию CMake, а затем корректируют функционал вручную. Это позволяет одновременно поддерживать древние версии CMake и местами использовать новые возможности.
+
+**Оформление проекта**  
+В начале любого ```CMakeLists.txt``` следует задать характеристики проекта командой project для лучшего оформления интегрированными средами и прочими инструментами разработки.
+```shell
+# Задать характеристики проекта "MyProject":
+project(MyProject VERSION 1.2.3.4 LANGUAGES C CXX)
+```
+Стоит отметить, что если ключевое слово ```LANGUAGES``` опущено, то по умолчанию задаются языки ```C``` ```CXX```. Вы также можете отключить указание любых языков путём написания ключевого слова ```NONE``` в качестве списка языков или просто оставить пустой список.
+
+**Сборка исполняемых файлов**
+Команда ```add_executable``` собирает исполняемый файл с заданным именем из списка исходников. Важно отметить, что окончательное имя файла зависит от целевой платформы (например, ```<ExecutableName>.exe``` или просто ```<ExecutableName>```). Типичный пример вызова данной команды:
+```shell
+# Собрать исполняемый файл "MyExecutable" из
+# исходников "ObjectHandler.c", "TimeManager.c" и "MessageGenerator.c":
+add_executable(MyExecutable ObjectHandler.c TimeManager.c MessageGenerator.c)
+```
+
+**Сборка библиотек файлов**
+Команда ```add_library``` собирает библиотеку с указанным видом и именем из исходников. Важно отметить, что окончательное имя библиотеки зависит от целевой платформы (например, ```LibraryName>.a``` или ```<LibraryName>.lib```). Типичный пример вызова данной команды:
+```shell
+# Собрать статическую библиотеку "MyLibrary" из
+# исходников "ObjectHandler.c", "TimeManager.c" и "MessageConsumer.c":
+add_library(MyLibrary STATIC ObjectHandler.c TimeManager.c MessageConsumer.c)
+```
+Также вторым аргументом можно задать ```SHARED```/```MODULE```/```OBJECT``` в зависимости от типа библиотеки.
+
+**Добавление исходников к цели**  
+Бывают случаи, требующие многократного добавления исходных файлов к цели. Для этого предусмотрена команда ```target_sources```, способная добавлять исходники к цели множество раз.  
+Первым аргументом команда ```target_sources``` принимает название цели, ранее указанной с помощью команд ```add_library``` или ```add_executable```, а последующие аргументы являются списком добавляемых исходных файлов.  
+Повторяющиеся вызовы команды ```target_sources``` добавляют исходные файлы к цели в том порядке, в каком они были вызваны, поэтому нижние два блока кода являются функционально эквивалентными:
+```shell
+# Задать исполняемый файл "MyExecutable" из исходников
+# "ObjectPrinter.c" и "SystemEvaluator.c":
+add_executable(MyExecutable ObjectPrinter.c SystemEvaluator.c)
+
+# Добавить к цели "MyExecutable" исходник "MessageConsumer.c":
+target_sources(MyExecutable MessageConsumer.c)
+# Добавить к цели "MyExecutable" исходник "ResultHandler.c":
+target_sources(MyExecutable ResultHandler.c)
+```
+```shell
+# Задать исполняемый файл "MyExecutable" из исходников
+# "ObjectPrinter.c", "SystemEvaluator.c", "MessageConsumer.c" и "ResultHandler.c":
+add_executable(MyExecutable ObjectPrinter.c SystemEvaluator.c MessageConsumer.c ResultHandler.c)
+```
+
+**Компоновка с библиотеками**  
+Команда ```target_link_libraries``` компонует библиотеку или исполняемый файл с другими предоставляемыми библиотеками. Первым аргументом данная команда принимает название цели, сгенерированной с помощью команд ```add_executable``` или ```add_library```, а последующие аргументы представляют собой названия целей библиотек или полные пути к библиотекам. Пример:
+```shell
+# Скомпоновать исполняемый файл "MyExecutable" с
+# библиотеками "JsonParser", "SocketFactory" и "BrowserInvoker":
+target_link_libraries(MyExecutable JsonParser SocketFactory BrowserInvoker)
+```
+
+**Добавление подпроектов**  
+Команда ```add_subdirectory``` побуждает CMake к незамедлительной обработке указанного файла подпроекта. Пример ниже демонстрирует применение описанного механизма:
+```shell
+# Добавить каталог "subLibrary" в сборку основного проекта,
+# а генерируемые файлы расположить в каталоге "subLibrary/build":
+add_subdirectory(subLibrary subLibrary/build)
+```
 
