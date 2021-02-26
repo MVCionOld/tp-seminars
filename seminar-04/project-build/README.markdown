@@ -299,7 +299,7 @@ project(MyProject VERSION 1.2.3.4 LANGUAGES C CXX)
 add_executable(MyExecutable ObjectHandler.c TimeManager.c MessageGenerator.c)
 ```
 
-**Сборка библиотек файлов**
+**Сборка библиотек из файлов**  
 Команда ```add_library``` собирает библиотеку с указанным видом и именем из исходников. Важно отметить, что окончательное имя библиотеки зависит от целевой платформы (например, ```LibraryName>.a``` или ```<LibraryName>.lib```). Типичный пример вызова данной команды:
 ```shell
 # Собрать статическую библиотеку "MyLibrary" из
