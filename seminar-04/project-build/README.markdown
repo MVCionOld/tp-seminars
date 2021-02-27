@@ -151,7 +151,7 @@ uninstall:
 SRC = main.c hello.c
 gcc -o hello $(SRC)
 ```
-**перед знаком доллара не должно быть слэша**
+  
 ```bash
 TARGET = hello
 PREFIX = /usr/local/bin
