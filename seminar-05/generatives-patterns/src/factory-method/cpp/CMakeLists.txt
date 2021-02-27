@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 add_executable(
     cpp
-    main.cpp
-    EthernetRouter.h
-    Router.h
-    WifiRouter.h
+        main.cpp
+        EthernetRouter.h
+        Router.h
+        WifiRouter.h
 )
