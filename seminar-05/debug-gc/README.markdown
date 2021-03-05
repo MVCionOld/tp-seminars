@@ -49,7 +49,9 @@ gdb main
 Чтобы завершить выполнение программы, нужно написать ```kill```.  
 Также можно написать ```help``` в любой момент и получить краткую справку, как пользоваться отладчиком.
 
-# ASAN
+# Segfault
+
+### ASAN
 ```c
 #include<stdio.h>
 
@@ -86,7 +88,7 @@ SUMMARY: AddressSanitizer: SEGV (/home/mvcion/Desktop/mipt-diht-tp-2021-seminars
 ==13517==ABORTING
 ```
 
-# ASAN & GDB
+### ASAN & GDB
 ```shell
 # комбинируем санитайзер и gdb (если вы хотите больше подробностей)
 # по идее это должно находить больше косяков, чем вариант в следующей ячейке
@@ -102,7 +104,7 @@ Program received signal SIGSEGV, Segmentation fault.
 5           printf("%d\n", a[100500]); // проезд по памяти
 ```
 
-# VALGRIND
+### VALGRIND
 ```shell
 # собираем как обычно и запускаем с valgrind
 gcc main.cpp -o main.exe
@@ -118,4 +120,52 @@ valgrind --tool=memcheck ./main.exe 2>&1 | head -n 8
 ==14448== Invalid read of size 4
 ==14448==    at 0x109184: main (in /home/mvcion/Desktop/mipt-diht-tp-2021-seminars/seminar-05/debug-gc/src/example-1/main.exe)
 ==14448==  Address 0x1fff061c50 is not stack'd, malloc'd or (recently) free'd
+```
+
+# Memory leaks
+```shell
+gcc main.cpp -o main.exe
+valgrind --tool=memcheck --leak-check=full ./main.exe 2>&1 
+```
+```text
+==15047== Memcheck, a memory error detector
+==15047== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==15047== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==15047== Command: ./main.exe
+==15047== 
+==15047== 
+==15047== HEAP SUMMARY:
+==15047==     in use at exit: 16 bytes in 1 blocks
+==15047==   total heap usage: 1 allocs, 0 frees, 16 bytes allocated
+==15047== 
+==15047== 16 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==15047==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15047==    by 0x10915A: main (in /home/mvcion/Desktop/mipt-diht-tp-2021-seminars/seminar-05/debug-gc/src/example-2/main.exe)
+==15047== 
+==15047== LEAK SUMMARY:
+==15047==    definitely lost: 16 bytes in 1 blocks
+==15047==    indirectly lost: 0 bytes in 0 blocks
+==15047==      possibly lost: 0 bytes in 0 blocks
+==15047==    still reachable: 0 bytes in 0 blocks
+==15047==         suppressed: 0 bytes in 0 blocks
+==15047== 
+==15047== For lists of detected and suppressed errors, rerun with: -s
+==15047== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+```
+---
+```shell
+gcc -fsanitize=address main.cpp -o main.exe
+./main.exe
+```
+```text
+
+=================================================================
+==15102==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0x7f701aab5bc8 in malloc (/lib/x86_64-linux-gnu/libasan.so.5+0x10dbc8)
+    #1 0x556ffe59d19a in main (/home/mvcion/Desktop/mipt-diht-tp-2021-seminars/seminar-05/debug-gc/src/example-2/main.exe+0x119a)
+    #2 0x7f701a7dd0b2 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x270b2)
+
+SUMMARY: AddressSanitizer: 16 byte(s) leaked in 1 allocation(s).
 ```
